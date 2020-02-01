@@ -40,9 +40,9 @@ class LogisticRegression:
         return grad_weights, grad_bias
 
     def update_coef(self, lr, grad_weights, grad_bias, l1, l2, keep_bias):
-        self.coef['weights'] -= lr * (
-                    grad_weights + l1 * (self.coef['weights'] / np.abs(self.coef['weights'])) + l2 * self.coef[
-                'weights'])
+        self.coef['weights'] -= lr * (grad_weights + \
+                                      l1 * (self.coef['weights'] / np.abs(self.coef['weights'])) + \
+                                      l2 * self.coef['weights'])
         if keep_bias:
             self.coef['bias'] -= lr * grad_bias
 
