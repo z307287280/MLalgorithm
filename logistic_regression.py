@@ -63,6 +63,7 @@ class LogisticRegression:
         when the training starts.
 
     """
+    
     def __init__(self, lr=0.01, max_iter=1000, multi_class='auto', keep_bias=True, reg_l1=0.0, reg_l2=0.01,
                  shuffle=False):
         self.lr = lr
@@ -85,6 +86,7 @@ class LogisticRegression:
             the shape of weights in the coefficients.
             i.e. for softmax: shape = (X.shape[1], y.shape[1])
         """
+        
         # if the model is binary classification model, the weights will be initialized in different way
         if self.multi_class == 'binary':
             self.coef['weights'] = np.random.uniform(-0.00001, 0.00001, shape[0])
@@ -175,11 +177,10 @@ class LogisticRegression:
         grad_bias: numpy.ndarray
             the gradient to update bias in the coefficients
         """
-
+        
         w = self.coef['weights']
         b = self.coef['bias']
         h = act_func(linear_func(X, w, b))
-
         grad_weights = X.T.dot(h - y) / y.shape[0]
         grad_bias = np.sum(h - y, axis=0) / y.shape[0]
         return grad_weights, grad_bias
@@ -208,6 +209,7 @@ class LogisticRegression:
         keep_bias: bool
             update bias or not
         """
+        
         self.coef['weights'] -= lr * (grad_weights +\
                                       l1 * (self.coef['weights'] / np.abs(self.coef['weights'])) +\
                                       l2 * self.coef['weights'])
@@ -240,7 +242,7 @@ class LogisticRegression:
         numpy.ndarray
             mini-batch for gradient descent
         """
-
+        
         if self.multi_class == 'binary':
             y = y.reshape((-1, 1))
 
@@ -267,8 +269,8 @@ class LogisticRegression:
             yield x_train, y_train
 
     def is_binary_label(self, y):
-        # check either is binary classification or multinomial classification
-
+        """check either is binary classification or multinomial classification"""
+        
         unique = set()
         for i in range(y.shape[0]):
             if y[i] not in unique:
@@ -302,7 +304,7 @@ class LogisticRegression:
         self
             return model itself
         """
-
+        
         # configure activation function
         if not self.activation:
             if self.multi_class == 'auto':
@@ -345,6 +347,7 @@ class LogisticRegression:
         numpy.ndarray
             return the results in probabilities
         """
+        
         prediction = self.activation(self.linear_function(X, self.coef['weights'], self.coef['bias']))
         return prediction
 
@@ -366,6 +369,7 @@ class LogisticRegression:
         numpy.ndarray
             1-D array of label results of prediction
         """
+        
         prediction = self.predict_proba(X)
         if prediction.ndim == 1:
             return np.array([1 if x >= threshold else 0 for x in prediction])
