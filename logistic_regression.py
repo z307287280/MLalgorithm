@@ -208,9 +208,9 @@ class LogisticRegression:
         keep_bias: bool
             update bias or not
         """
-        self.coef['weights'] -= lr * (
-                    grad_weights + l1 * (self.coef['weights'] / np.abs(self.coef['weights'])) + l2 * self.coef[
-                'weights'])
+        self.coef['weights'] -= lr * (grad_weights +\
+                                      l1 * (self.coef['weights'] / np.abs(self.coef['weights'])) +\
+                                      l2 * self.coef['weights'])
         if keep_bias:
             self.coef['bias'] -= lr * grad_bias
 
