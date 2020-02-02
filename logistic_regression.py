@@ -222,7 +222,7 @@ class LogisticRegression:
 
     def batch_generator(self, X, y, batch_size, shuffle):
         """
-        generate a mini-batch generator
+        initialize a mini-batch generator
 
         Parameters
         __________
