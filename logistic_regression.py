@@ -19,7 +19,6 @@ class LogisticRegression:
     
     batch_size: flaot (0,1), int or None, default 1
         choose mini-batch to update gradient
-        sgd: batch_szie=1
 
     max_iter: int, optional, default 1000
         the iteration amount that the model will run
@@ -266,31 +265,22 @@ class LogisticRegression:
         """
 
         if shuffle:
-            if self.multi_class == 'binary':
-                y = y.reshape((-1, 1))
-            index = X.shape[1]
-            dataset = np.hstack((X, y))
-            np.random.shuffle(dataset)
-
-            X = dataset[:, :index]
-            y = dataset[:, -1] if self.multi_class == 'binary' else dataset[:, index:]
-            del dataset
-
+            shuffle_index = np.random.choice(X.shape[0], X.shape[0], replace=False)
+            X = X[shuffle_index]
+            y = y[shuffle_index]
+        
         if not batch_size or batch_size < 0:
             batch_size = X.shape[0]
         if 0 < batch_size < 1:
             batch_size = int(X.shape[0] * batch_size)
-
-        num_batches = X.shape[0] // batch_size
-        if X.shape[0] % batch_size:
-            num_batches += 1
-
-        if num_batches == 1:
+        
+        # when batch size greater than training data size, return training data
+        if not X.shape[0] // batch_size:
             yield X, y
 
         else:
-            for i in range(num_batches):
-                x_train, y_train = X[i * batch_size:(i + 1) * batch_size], y[i * batch_size:(i + 1) * batch_size]
+            for i in np.arange(0, X.shape[0], batch_size):
+                x_train, y_train = X[i:i + batch_size], y[i:i +  batch_size]
                 yield x_train, y_train
 
     def is_binary_label(self, y):
