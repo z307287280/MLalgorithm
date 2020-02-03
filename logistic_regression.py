@@ -16,6 +16,10 @@ class LogisticRegression:
     ----------
     lr: float, optional, default 0.01
         learning rate of model
+    
+    batch_size: flaot (0,1), int or None, default 1
+        choose mini-batch to update gradient
+        sgd: batch_szie=1
 
     max_iter: int, optional, default 1000
         the iteration amount that the model will run
@@ -40,6 +44,10 @@ class LogisticRegression:
     ----------
     lr: float
         learning rate of gradient descent
+        
+    batch_size: flaot(0,1), int or None, default 1
+        choose mini-batch to update gradient
+        sgd: batch_szie=1
 
     max_iter: int
         maximum iteration times of updating coefficients
@@ -71,9 +79,10 @@ class LogisticRegression:
 
     """
 
-    def __init__(self, lr=0.01, max_iter=1000, multi_class='auto', keep_bias=True, reg_l1=0.0, reg_l2=0.01,
+    def __init__(self, lr=0.01, batch_size=1, max_iter=1000, multi_class='auto', keep_bias=True, reg_l1=0.0, reg_l2=0.01,
                  shuffle=False):
         self.lr = lr
+        self.batch_size = batch_size
         self.max_iter = max_iter
         self.multi_class = multi_class
         self.keep_bias = keep_bias
@@ -241,10 +250,15 @@ class LogisticRegression:
         y: numpy.ndarray
             1-D or 2-D targets in dataset
             it is a little different from the parameter in 'fit' method
-
+        
+        batch_size: float (0, 1) or int or None
+            the batch_size to update weights and bias.
+            if the batch_size input is a ratio expression, it will automatically convert it to 
+            real int batch_size. 
+            
         shuffle: bool
             if shuffle the dataset
-
+        
         Yield
         -----
         numpy.ndarray
@@ -290,7 +304,7 @@ class LogisticRegression:
                 return False
         return True
 
-    def fit(self, X, y, batch_size=1, reset_coef=False):
+    def fit(self, X, y, reset_coef=False):
         """
         train the model
 
@@ -302,10 +316,6 @@ class LogisticRegression:
         y: numpy.ndarray
             1-D array in dataset, if it is not binary, this method will
             one-hot-encodes target into 2-D array.
-
-        batch_size: int or None, default 1
-            choose mini-batch to update gradient
-            sgd: batch_szie=1
 
         reset_coef: bool, defalut False
             if reset the coefficients or continute to train the model by using fit method.
@@ -348,7 +358,7 @@ class LogisticRegression:
 
         # train the model
         for i in range(self.max_iter):
-            batches = self.batch_generator(X, y, batch_size, self.shuffle)
+            batches = self.batch_generator(X, y, self.batch_size, self.shuffle)
             for x_train, y_train in batches:
                 grad_weights, grad_bias = self.gradient(x_train, y_train, self.linear_function, self.activation)
                 self.update_coef(self.lr, grad_weights, grad_bias, self.reg_l1, self.reg_l2, self.keep_bias)
