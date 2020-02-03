@@ -6,6 +6,7 @@ Logistic Regression
 
 
 import numpy as np
+import pandas as pd
 
 
 class LogisticRegression:
@@ -16,7 +17,7 @@ class LogisticRegression:
     ----------
     lr: float, optional, default 0.01
         learning rate of model
-    
+
     batch_size: flaot (0,1), int or None, default 1
         choose mini-batch to update gradient
 
@@ -43,7 +44,7 @@ class LogisticRegression:
     ----------
     lr: float
         learning rate of gradient descent
-        
+
     batch_size: flaot(0,1), int or None, default 1
         choose mini-batch to update gradient
         sgd: batch_szie=1
@@ -78,7 +79,8 @@ class LogisticRegression:
 
     """
 
-    def __init__(self, lr=0.01, batch_size=1, max_iter=1000, multi_class='auto', keep_bias=True, reg_l1=0.0, reg_l2=0.01,
+    def __init__(self, lr=0.01, batch_size=1, max_iter=1000, multi_class='auto', keep_bias=True, reg_l1=0.0,
+                 reg_l2=0.01,
                  shuffle=False):
         self.lr = lr
         self.batch_size = batch_size
@@ -249,15 +251,15 @@ class LogisticRegression:
         y: numpy.ndarray
             1-D or 2-D targets in dataset
             it is a little different from the parameter in 'fit' method
-        
+
         batch_size: float (0, 1) or int or None
             the batch_size to update weights and bias.
-            if the batch_size input is a ratio expression, it will automatically convert it to 
-            real int batch_size. 
-            
+            if the batch_size input is a ratio expression, it will automatically convert it to
+            real int batch_size.
+
         shuffle: bool
             if shuffle the dataset
-        
+
         Yield
         -----
         numpy.ndarray
@@ -268,19 +270,19 @@ class LogisticRegression:
             shuffle_index = np.random.choice(X.shape[0], X.shape[0], replace=False)
             X = X[shuffle_index]
             y = y[shuffle_index]
-        
+
         if not batch_size or batch_size < 0:
             batch_size = X.shape[0]
         if 0 < batch_size < 1:
             batch_size = int(X.shape[0] * batch_size)
-        
+
         # when batch size greater than training data size, return training data
         if not X.shape[0] // batch_size:
             yield X, y
 
         else:
             for i in np.arange(0, X.shape[0], batch_size):
-                x_train, y_train = X[i:i + batch_size], y[i:i +  batch_size]
+                x_train, y_train = X[i:i + batch_size], y[i:i + batch_size]
                 yield x_train, y_train
 
     def is_binary_label(self, y):
@@ -290,10 +292,41 @@ class LogisticRegression:
         for i in range(y.shape[0]):
             if y[i] not in unique:
                 unique.add(y[i])
-            
+
             if len(unique) > 2:
                 return False
         return True
+
+    def pandas_to_numpy(self, data):
+        """convert pandas to numpy type"""
+        
+        if isinstance(data, (pd.DataFrame, pd.Series)):
+            return data.to_numpy()
+
+        elif isinstance(data, np.ndarray):
+            return data
+
+        else:
+            raise TypeError("only accepts data in numpy or pandas type. Got %s." % (type(data)))
+
+    def uniform_input(self, X, y=None):
+        """convert X, y to numpy array form"""
+        
+        X = self.pandas_to_numpy(X)
+        if X.ndim == 1:
+            X = X.reshape((X.shape[0], -1))
+
+        if not isinstance(y, (np.ndarray, pd.DataFrame, pd.Series)):
+            return X
+
+        y = self.pandas_to_numpy(y)
+        if y.ndim == 2:
+            y = y.reshape(y.shape[0])
+
+        if X.shape[0] != y.shape[0]:
+            raise ValueError(
+                "inconsistant numbers of X and y. Got shape of X %s and shape of y %s." % (X.shape, y.shape))
+        return X, y
 
     def fit(self, X, y, reset_coef=False):
         """
@@ -317,10 +350,8 @@ class LogisticRegression:
         self
             return model itself
         """
-
-        # change X into 2-D array if necessary
-        if X.ndim == 1:
-            X = X.reshape((X.shape[0], -1))
+        # convert X and y into uniform type
+        X, y = self.uniform_input(X, y)
 
         # configure activation function and multi_class
         if not self.activation or not callable(self.activation):
@@ -370,8 +401,7 @@ class LogisticRegression:
             return the results in probabilities
         """
 
-        if X.ndim == 1:
-            X = X.reshape((X.shape[0], -1))
+        X = self.uniform_input(X)
 
         prediction = self.activation(self.linear_function(X, self.coef['weights'], self.coef['bias']))
         return prediction
@@ -394,9 +424,8 @@ class LogisticRegression:
         numpy.ndarray
             1-D array of label results of prediction
         """
-
-        if X.ndim == 1:
-            X = X.reshape((X.shape[0], -1))
+        
+        X = self.uniform_input(X)
 
         prediction = self.predict_proba(X)
         if prediction.ndim == 1:
