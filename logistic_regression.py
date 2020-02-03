@@ -278,7 +278,7 @@ class LogisticRegression:
 
         if not batch_size or batch_size < 0:
             batch_size = X.shape[0]
-        if 0 < batch_size <= 1:
+        if 0 < batch_size < 1:
             batch_size = int(X.shape[0] * batch_size)
 
         num_batches = X.shape[0] // batch_size
@@ -300,6 +300,7 @@ class LogisticRegression:
         for i in range(y.shape[0]):
             if y[i] not in unique:
                 unique.add(y[i])
+            
             if len(unique) > 2:
                 return False
         return True
