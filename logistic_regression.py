@@ -1,3 +1,10 @@
+"""
+Logistic Regression
+"""
+
+#Author: Rancai Chen <chenrancai1993@gmail.com>
+
+
 import numpy as np
 
 
