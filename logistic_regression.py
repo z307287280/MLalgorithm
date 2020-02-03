@@ -47,7 +47,6 @@ class LogisticRegression:
 
     batch_size: flaot(0,1), int or None, default 1
         choose mini-batch to update gradient
-        sgd: batch_szie=1
 
     max_iter: int
         maximum iteration times of updating coefficients
