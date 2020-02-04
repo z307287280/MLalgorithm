@@ -323,7 +323,8 @@ class LogisticRegression:
 
         if X.shape[0] != y.shape[0]:
             raise ValueError(
-                "inconsistant numbers of X and y. Got shape of X %s and shape of y %s." % (X.shape, y.shape))
+                "inconsistant numbers of X and y.
+                "Got shape of X %s and shape of y %s." % (X.shape, y.shape))
         return X, y
 
     def fit(self, X, y, reset_coef=False):
@@ -380,8 +381,9 @@ class LogisticRegression:
         for i in range(self.max_iter):
             batches = self.batch_generator(X, y, self.batch_size, self.shuffle)
             for x_train, y_train in batches:
-                grad_weights, grad_bias = self.gradient(x_train, y_train, self.linear_function, self.activation)
-                self.update_coef(self.lr, grad_weights, grad_bias, self.reg_l1, self.reg_l2, self.keep_bias)
+                grad_weights, grad_bias = self.gradient(x_train, y_train, self.linear_function, 
+                                                        self.activation, self.l1, self.l2)
+                self.update_coef(self.lr, grad_weights, grad_bias, self.keep_bias)
         return self
 
     def predict_proba(self, X):
