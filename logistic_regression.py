@@ -78,7 +78,7 @@ class LogisticRegression:
 
     """
 
-    def __init__(self, lr=0.01, batch_size=1, max_iter=1000, multi_class='auto', keep_bias=True, reg_l1=0.0,
+    def __init__(self, lr=0.01, batch_size=0, max_iter=100, multi_class='auto', keep_bias=True, reg_l1=0.0,
                  reg_l2=0.01,
                  shuffle=False):
         self.lr = lr
@@ -167,7 +167,7 @@ class LogisticRegression:
         """
         return (np.exp(z.T) / np.sum(np.exp(z), axis=1)).T
 
-    def gradient(self, X, y, linear_func, act_func):
+    def gradient(self, X, y, linear_func, act_func, l1, l2):
         """
         gradient computation
 
@@ -197,11 +197,12 @@ class LogisticRegression:
         w = self.coef['weights']
         b = self.coef['bias']
         h = act_func(linear_func(X, w, b))
-        grad_weights = X.T.dot(h - y) / y.shape[0]
-        grad_bias = np.sum(h - y, axis=0) / y.shape[0]
+        grad_reg = (l1 * (self.coef['weights'] / np.abs(self.coef['weights'])) + l2 * self.coef['weights']) / y.shape[0]
+        grad_weights = X.T.dot(h - y) / y.shape[0] + grad_reg
+        grad_bias = np.sum(h - y, axis=0)  / y.shape[0]
         return grad_weights, grad_bias
 
-    def update_coef(self, lr, grad_weights, grad_bias, l1, l2, keep_bias):
+    def update_coef(self, lr, grad_weights, grad_bias, keep_bias):
         """
         update coefficients  after receive gradients from gradient function
 
@@ -226,9 +227,7 @@ class LogisticRegression:
             update bias or not
         """
 
-        self.coef['weights'] -= lr * (grad_weights +
-                                      l1 * (self.coef['weights'] / np.abs(self.coef['weights'])) +
-                                      l2 * self.coef['weights'])
+        self.coef['weights'] -= lr * grad_weights
         if keep_bias:
             self.coef['bias'] -= lr * grad_bias
 
