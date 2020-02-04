@@ -59,9 +59,8 @@ class LogisticRegression:
         when the training starts.
     """
 
-    def __init__(self, lr=0.01, batch_size=0, max_iter=100, multi_class='auto', keep_bias=True, reg_l1=0.0,
-                 reg_l2=0.01,
-                 shuffle=False):
+    def __init__(self, lr=0.01, batch_size=0, max_iter=100, multi_class='auto', 
+                 keep_bias=True, reg_l1=0.0,reg_l2=0.01, shuffle=False):
         self.lr = lr
         self.batch_size = batch_size
         self.max_iter = max_iter
