@@ -12,48 +12,40 @@ import pandas as pd
 class LogisticRegression:
     """
     Logistic regression based on gradient descent framework
+    
     Parameters
     ----------
     lr: float, optional, default 0.01
         learning rate of model
+        
     batch_size: flaot (0,1), int or None, default 1
         choose mini-batch to update gradient
+        
     max_iter: int, optional, default 1000
         the iteration amount that the model will run
+        
     multi_class: {'auto', 'binary', 'multinomial'}, optional, default 'auto'
         This parameter indicates the model to be trained either in binary or multinomial.
         By choosing 'auto', the model will recognize itself.
+        
     keep_bias: bool, optional, default True
         keep intercept in linear parts or not
+        
     reg_l1: float, optional, default 0.0
         l1 regularization
+        
     reg_l2: float, optional, default 0.01
         l2 regularization
+        
     shuffle: bool, optional, default False
         if shuffle the dataset before computing gradient
+    
     Attributes
     ----------
-    lr: float
-        learning rate of gradient descent
-    batch_size: flaot(0,1), int or None, default 1
-        choose mini-batch to update gradient
-    max_iter: int
-        maximum iteration times of updating coefficients
-    multi_class: {'auto', 'binary', 'multinomial'}
-        the type of classification model will build based on how many classes in the training dataset
-        by choosing 'auto', the model  will recognize the type itself. The multi_class will be updated
-        to either 'binary' or 'multinomial' after the training starts.
-    keep_bias: bool
-        if keep intercept in the linear parts
-    reg_l1: float
-        l1 regularization
-    reg_l2: float
-        l2 regularization
-    shuffle: bool
-        if shuffle the dataset before computing gradient
     activation: function
         the activation function that will be applied for training and prediction,
         it will be automatically assigned when the training starts.
+        
     coef: dictionary
         the coefficients of linear parts, it will be initialized and updated
         when the training starts.
@@ -75,6 +67,7 @@ class LogisticRegression:
     def initialize_coef(self, shape):
         """
         initialize the coefficients in the model
+        
         Parameters
         ----------
         shape: tuple
@@ -92,14 +85,18 @@ class LogisticRegression:
     def linear_function(self, X, w, b):
         """
         linear parts of model
+        
         Parameters
         ----------
         X: numpy.ndarray
             2-D array features in the dataset
+            
         w: numpy.ndarray
             1-D or 2-D array weights in coefficients
+            
         b: numpy.ndarray
             1-D array bias in coefficients
+        
         Returns
         -------
         numpy.ndarray
@@ -107,54 +104,67 @@ class LogisticRegression:
             For binary classification, it will return 1-D array. For multinomial
             classification, it will return 2-D array
         """
+        
         return (X.dot(w) + b)
 
     def sigmoid(self, z):
         """
         sigmoid activation function for binary classification
+        
         Parameters
         ----------
         z: np.ndarray
             1-D numpy array
+        
         Returns
         -------
         numpy.ndarray
             1-D numpy array which all the values are narrowed in range of (0, 1)
         """
+        
         return 1 / (1 + np.exp(-z))
 
     def softmax(self, z):
         """
         softmax activation function for multinomial classification
+        
         Parameters
         ----------
         z: np.ndarray
             2-D numpy array
+        
         Returns
         -------
         numpy.ndarray
             2-D numpy array which all the values are narrowed in range of (0, 1)
             and summation in direction of 1-axis equals one
         """
+        
         return (np.exp(z.T) / np.sum(np.exp(z), axis=1)).T
 
     def gradient(self, X, y, linear_func, act_func, l1, l2):
         """
         gradient computation
+        
         Parameters
         ----------
         X: numpy.ndarray
             2-D features in the dataset
+        
         y: numpy.ndarray
             1-D or 2-D targets in the dataset
+        
         linear_func: function
             linear function to compute linear parts in the model
+        
         act_func: function
             activation function to transform the linear results
+        
         Returns
         -------
         grad_weights: numpy.ndarray
             the gradient to update weights in the coefficients
+        
         grad_bias: numpy.ndarray
             the gradient to update bias in the coefficients
         """
@@ -170,18 +180,24 @@ class LogisticRegression:
     def update_coef(self, lr, grad_weights, grad_bias, keep_bias):
         """
         update coefficients  after receive gradients from gradient function
+        
         Parameters
         ----------
         lr: float
             learning rate
+        
         grad_weights: numpy.ndarray
             the gradient to update weights
+        
         grad_bias: numpy.ndarray
             the gradient to update bias
+        
         l1: float
             l1 regularization
+        
         l2: float
             l2 regularization
+        
         keep_bias: bool
             update bias or not
         """
@@ -199,19 +215,24 @@ class LogisticRegression:
     def batch_generator(self, X, y, batch_size, shuffle):
         """
         initialize a mini-batch generator
+        
         Parameters
         ----------
         X: numpy.ndarray
             2-D features in dataset
+        
         y: numpy.ndarray
             1-D or 2-D targets in dataset
             it is a little different from the parameter in 'fit' method
+        
         batch_size: float (0, 1) or int or None
             the batch_size to update weights and bias.
             if the batch_size input is a ratio expression, it will automatically convert it to
             real int batch_size.
+        
         shuffle: bool
             if shuffle the dataset
+        
         Yield
         -----
         numpy.ndarray
@@ -267,14 +288,12 @@ class LogisticRegression:
         X = self.pandas_to_numpy(X)
         if X.ndim == 1:
             X = X.reshape((X.shape[0], -1))
-
         if not isinstance(y, (np.ndarray, pd.DataFrame, pd.Series)):
             return X
 
         y = self.pandas_to_numpy(y)
         if y.ndim == 2:
             y = y.reshape(y.shape[0])
-
         if X.shape[0] != y.shape[0]:
             raise ValueError(
                 "inconsistant numbers of X and y. Got shape of X %s and shape of y %s." % (X.shape, y.shape))
@@ -283,16 +302,20 @@ class LogisticRegression:
     def fit(self, X, y, reset_coef=False):
         """
         train the model
+        
         Parameters
         ----------
         X: numpy.ndarray
             1-D or 2-D array features in dataset
+        
         y: numpy.ndarray
             1-D array in dataset, if it is not binary, this method will
             one-hot-encodes target into 2-D array.
+        
         reset_coef: bool, defalut False
             if reset the coefficients or continute to train the model by using fit method.
             The result will be accumulated if choose False.
+        
         Returns
         -------
         self
@@ -338,10 +361,12 @@ class LogisticRegression:
     def predict_proba(self, X):
         """
         predict results in probability form
+        
         Parameters
         ----------
         X: numpy.ndarray
             2-D array features in the dataset
+        
         Returns
         -------
         numpy.ndarray
@@ -356,13 +381,16 @@ class LogisticRegression:
     def predict(self, X, threshold=0.5):
         """
         predict results and convert them into labels
+        
         Parameters
         ----------
         X: numpy.ndarray
             features in dataset
+        
         threshold: float (0, 1), default 0.5
             it only works for binary classification, the threshold
             will convert the probabilities into binary labels.
+        
         Returns
         -------
         numpy.ndarray
