@@ -306,11 +306,11 @@ class LogisticRegression:
         
         Parameters
         ----------
-        X: numpy.ndarray or scipy.sparse.spmatrix
+        X: numpy.ndarray, scipy.sparse.spmatrix or pandas.DataFrame
             1-D or 2-D array features in dataset
         
-        y: numpy.ndarray
-            1-D array in dataset, if it is not binary, this method will
+        y: numpy.ndarray, pandas.Series or pandas.DataFrame
+            1-D array in dataset, if it is not binary classification, this method will
             one-hot-encodes target into 2-D array.
         
         reset_coef: bool, defalut False
