@@ -6,6 +6,7 @@ Logistic Regression
 
 
 import numpy as np
+import scipy as sp
 import pandas as pd
 
 
@@ -276,7 +277,7 @@ class LogisticRegression:
         if isinstance(data, (pd.DataFrame, pd.Series)):
             return data.to_numpy()
 
-        elif isinstance(data, np.ndarray):
+        elif isinstance(data, (np.ndarray, sp.sparse.spmatrix)):
             return data
 
         else:
@@ -305,7 +306,7 @@ class LogisticRegression:
         
         Parameters
         ----------
-        X: numpy.ndarray
+        X: numpy.ndarray or scipy.sparse.spmatrix
             1-D or 2-D array features in dataset
         
         y: numpy.ndarray
