@@ -173,7 +173,7 @@ class LogisticRegression:
         w = self.coef['weights']
         b = self.coef['bias']
         h = act_func(linear_func(X, w, b))
-        grad_reg = (l1 * (self.coef['weights'] / np.abs(self.coef['weights'])) + l2 * self.coef['weights']) / y.shape[0]
+        grad_reg = (l1/2 * (self.coef['weights'] / np.abs(self.coef['weights'])) + l2 * self.coef['weights']) / y.shape[0]
         grad_weights = X.T.dot(h - y) / y.shape[0] + grad_reg
         grad_bias = np.sum(h - y, axis=0)  / y.shape[0]
         return grad_weights, grad_bias
